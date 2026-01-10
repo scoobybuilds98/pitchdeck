@@ -466,5 +466,429 @@ const BlueCapital = {
     },
 
     /**
-     * Financial Projections Section - Continuing in next edit...
+     * Financial Projections with Charts
      */
+    buildFinancialProjections() {
+        return `
+            <section class="financial-projections" style="margin: var(--space-12) 0;">
+                <h2 style="font-size: var(--text-4xl); font-weight: var(--weight-bold); margin-bottom: var(--space-3); color: var(--color-gray-900);">
+                    Financial Projections & Analytics
+                </h2>
+                <p class="lead-text" style="margin-bottom: var(--space-8); max-width: 900px;">
+                    Comprehensive 6-year financial model incorporating portfolio growth, net interest margin dynamics,
+                    credit loss provisioning, and operating leverage.
+                </p>
+
+                <div class="charts-grid">
+                    <!-- Revenue & Profit Projection -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-section">
+                                <h3 class="chart-title">Revenue & Profit Projection</h3>
+                                <p class="chart-subtitle">6-Year Growth (2025-2030)</p>
+                            </div>
+                        </div>
+                        <p style="font-size: var(--text-sm); color: var(--color-gray-600); line-height: 1.7; margin-bottom: var(--space-5);">
+                            Revenue growth driven by portfolio expansion and consistent net interest margin. Profitability
+                            improves as operating costs are leveraged across larger portfolio base.
+                        </p>
+                        <div class="chart-wrapper">
+                            <canvas id="finance-revenue-profit-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Profit Margin Trend -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-section">
+                                <h3 class="chart-title">Profit Margin Analysis</h3>
+                                <p class="chart-subtitle">Efficiency Improvement</p>
+                            </div>
+                        </div>
+                        <p style="font-size: var(--text-sm); color: var(--color-gray-600); line-height: 1.7; margin-bottom: var(--space-5);">
+                            Margin expansion from 28% to 35% driven by operating leverage, improved credit selection,
+                            and technology automation reducing per-contract costs.
+                        </p>
+                        <div class="chart-wrapper">
+                            <canvas id="finance-margin-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Portfolio Mix -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-section">
+                                <h3 class="chart-title">Portfolio Mix (2025)</h3>
+                                <p class="chart-subtitle">Product Distribution</p>
+                            </div>
+                        </div>
+                        <p style="font-size: var(--text-sm); color: var(--color-gray-600); line-height: 1.7; margin-bottom: var(--space-5);">
+                            Balanced portfolio across equipment loans (60%), leases (30%), and lines of credit (10%)
+                            optimizes for risk-adjusted returns and customer needs.
+                        </p>
+                        <div class="chart-wrapper chart-md">
+                            <canvas id="finance-portfolio-mix-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Portfolio Growth -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-section">
+                                <h3 class="chart-title">Portfolio Growth by Product</h3>
+                                <p class="chart-subtitle">Contract Volume Expansion</p>
+                            </div>
+                        </div>
+                        <p style="font-size: var(--text-sm); color: var(--color-gray-600); line-height: 1.7; margin-bottom: var(--space-5);">
+                            Steady portfolio growth across all products demonstrates sustainable origination capacity
+                            and market acceptance of our financing solutions.
+                        </p>
+                        <div class="chart-wrapper chart-md">
+                            <canvas id="finance-portfolio-growth-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `;
+    },
+
+    /**
+     * Product Analysis Section
+     */
+    buildProductAnalysis() {
+        return `
+            <section class="product-analysis" style="margin: var(--space-12) 0;">
+                <h2 style="font-size: var(--text-4xl); font-weight: var(--weight-bold); margin-bottom: var(--space-3); color: var(--color-gray-900);">
+                    Product Analysis
+                </h2>
+                <p class="lead-text" style="margin-bottom: var(--space-8); max-width: 900px;">
+                    Detailed analysis of our three complementary financing products, each serving distinct customer needs
+                    and risk profiles.
+                </p>
+
+                <div class="grid grid-3" style="gap: var(--space-6);">
+                    <!-- Equipment Loans -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Equipment Loans</h3>
+                            <p class="card-subtitle">Ownership Financing</p>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7; margin-bottom: var(--space-4);">
+                                Traditional equipment financing with asset ownership transferred to customer. Secured by equipment,
+                                provides predictable amortizing payments over 60-month term.
+                            </p>
+                            <div style="background: var(--color-gray-50); padding: var(--space-4); border-radius: var(--radius-md);">
+                                <div class="grid grid-2" style="gap: var(--space-3); margin-bottom: var(--space-3);">
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Interest Rate</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-finance);">
+                                            8.5%
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Loan-to-Value</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-finance);">
+                                            75%
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Term</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-finance);">
+                                            60 mo
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Portfolio %</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-success);">
+                                            60%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Equipment Leases -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Equipment Leases</h3>
+                            <p class="card-subtitle">Operating Lease Solutions</p>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7; margin-bottom: var(--space-4);">
+                                Operating leases enable customers to use equipment without ownership, preserving capital and
+                                enabling operating expense treatment. We retain residual value upside.
+                            </p>
+                            <div style="background: var(--color-gray-50); padding: var(--space-4); border-radius: var(--radius-md);">
+                                <div class="grid grid-2" style="gap: var(--space-3); margin-bottom: var(--space-3);">
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Effective Rate</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-finance);">
+                                            9.5%
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Loan-to-Value</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-finance);">
+                                            85%
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Term</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-finance);">
+                                            48 mo
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Portfolio %</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-success);">
+                                            30%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lines of Credit -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Equipment Lines of Credit</h3>
+                            <p class="card-subtitle">Flexible Working Capital</p>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7; margin-bottom: var(--space-4);">
+                                Revolving credit facilities secured by equipment enable customers to manage working capital
+                                fluctuations. Higher rates reflect shorter-term revolving nature.
+                            </p>
+                            <div style="background: var(--color-gray-50); padding: var(--space-4); border-radius: var(--radius-md);">
+                                <div class="grid grid-2" style="gap: var(--space-3); margin-bottom: var(--space-3);">
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Interest Rate</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-finance);">
+                                            Prime + 6.5%
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Advance Rate</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-finance);">
+                                            70%
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Commitment</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-finance);">
+                                            12 mo revolving
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">Portfolio %</div>
+                                        <div style="font-size: var(--text-lg); font-weight: var(--weight-bold); font-family: var(--font-mono); color: var(--color-success);">
+                                            10%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `;
+    },
+
+    /**
+     * Interactive Portfolio Planning
+     */
+    buildPortfolioPlanning() {
+        return `
+            <section class="portfolio-planning" style="margin: var(--space-12) 0;">
+                <h2 style="font-size: var(--text-4xl); font-weight: var(--weight-bold); margin-bottom: var(--space-3); color: var(--color-gray-900);">
+                    Interactive Portfolio Planning
+                </h2>
+                <p class="lead-text" style="margin-bottom: var(--space-8); max-width: 900px;">
+                    Customize contract volumes by product and year to model your preferred growth strategy.
+                    All financial projections update instantly as you adjust parameters.
+                </p>
+
+                <div id="portfolio-inputs-container"></div>
+            </section>
+        `;
+    },
+
+    /**
+     * Risk Assessment Section
+     */
+    buildRiskAssessment() {
+        return `
+            <section class="risk-assessment" style="margin: var(--space-12) 0;">
+                <h2 style="font-size: var(--text-4xl); font-weight: var(--weight-bold); margin-bottom: var(--space-3); color: var(--color-gray-900);">
+                    Risk Assessment & Mitigation
+                </h2>
+                <p class="lead-text" style="margin-bottom: var(--space-8); max-width: 900px;">
+                    Comprehensive risk framework identifies key exposure areas and outlines proven mitigation strategies
+                    from equipment financing best practices.
+                </p>
+
+                <div class="grid grid-2" style="gap: var(--space-6);">
+                    <!-- Credit Risk -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; align-items: center; gap: var(--space-3);">
+                                <div style="width: 8px; height: 8px; background: var(--color-warning); border-radius: 50%;"></div>
+                                <div>
+                                    <h3 class="card-title">Credit & Default Risk</h3>
+                                    <p class="card-subtitle">Borrower payment performance</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7; margin-bottom: var(--space-4);">
+                                <strong>Risk:</strong> Economic downturn or customer financial distress leads to payment defaults,
+                                requiring equipment repossession and disposition at potentially depressed values.
+                            </p>
+                            <div style="background: var(--color-gray-50); padding: var(--space-4); border-radius: var(--radius-md); border-left: 3px solid var(--color-success);">
+                                <h4 style="font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-success); margin-bottom: var(--space-2);">
+                                    Mitigation Strategies
+                                </h4>
+                                <ul style="margin: 0; padding-left: var(--space-5); font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7;">
+                                    <li>Conservative LTV ratios (70-85% vs 90%+ competitors)</li>
+                                    <li>Specialized underwriting (equipment-specific expertise)</li>
+                                    <li>Diversified portfolio (transport + construction + industrial)</li>
+                                    <li>4% loss provision (2x historical default rates)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interest Rate Risk -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; align-items: center; gap: var(--space-3);">
+                                <div style="width: 8px; height: 8px; background: var(--color-warning); border-radius: 50%;"></div>
+                                <div>
+                                    <h3 class="card-title">Interest Rate Risk</h3>
+                                    <p class="card-subtitle">Funding cost volatility</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7; margin-bottom: var(--space-4);">
+                                <strong>Risk:</strong> Rising interest rates increase our funding costs while customer rates
+                                remain fixed on existing contracts, compressing net interest margin.
+                            </p>
+                            <div style="background: var(--color-gray-50); padding: var(--space-4); border-radius: var(--radius-md); border-left: 3px solid var(--color-success);">
+                                <h4 style="font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-success); margin-bottom: var(--space-2);">
+                                    Mitigation Strategies
+                                </h4>
+                                <ul style="margin: 0; padding-left: var(--space-5); font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7;">
+                                    <li>Fixed-rate funding match to asset duration</li>
+                                    <li>400bp spread provides cushion for rate movements</li>
+                                    <li>Variable-rate products (LOC) adjust with market</li>
+                                    <li>Interest rate swaps for duration mismatches</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Residual Value Risk -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; align-items: center; gap: var(--space-3);">
+                                <div style="width: 8px; height: 8px; background: var(--color-info); border-radius: 50%;"></div>
+                                <div>
+                                    <h3 class="card-title">Residual Value Risk</h3>
+                                    <p class="card-subtitle">Equipment value volatility</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7; margin-bottom: var(--space-4);">
+                                <strong>Risk:</strong> Equipment values decline faster than projected, impairing lease residual
+                                values and collateral coverage for loans.
+                            </p>
+                            <div style="background: var(--color-gray-50); padding: var(--space-4); border-radius: var(--radius-md); border-left: 3px solid var(--color-success);">
+                                <h4 style="font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-success); margin-bottom: var(--space-2);">
+                                    Mitigation Strategies
+                                </h4>
+                                <ul style="margin: 0; padding-left: var(--space-5); font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7;">
+                                    <li>Conservative residual value assumptions (35% vs 50% OEM)</li>
+                                    <li>Focus on mainstream equipment with liquid markets</li>
+                                    <li>Ongoing residual value monitoring and updates</li>
+                                    <li>Equipment loans reduce residual exposure</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regulatory & Compliance Risk -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; align-items: center; gap: var(--space-3);">
+                                <div style="width: 8px; height: 8px; background: var(--color-info); border-radius: 50%;"></div>
+                                <div>
+                                    <h3 class="card-title">Regulatory Risk</h3>
+                                    <p class="card-subtitle">Compliance requirements</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7; margin-bottom: var(--space-4);">
+                                <strong>Risk:</strong> Changes to consumer lending regulations, capital requirements, or tax treatment
+                                of equipment financing could impact profitability or operations.
+                            </p>
+                            <div style="background: var(--color-gray-50); padding: var(--space-4); border-radius: var(--radius-md); border-left: 3px solid var(--color-success);">
+                                <h4 style="font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-success); margin-bottom: var(--space-2);">
+                                    Mitigation Strategies
+                                </h4>
+                                <ul style="margin: 0; padding-left: var(--space-5); font-size: var(--text-sm); color: var(--color-gray-700); line-height: 1.7;">
+                                    <li>Non-bank lender status (lighter regulatory burden)</li>
+                                    <li>Commercial focus (vs consumer lending regulations)</li>
+                                    <li>Compliance budget (1.5% of revenue allocated)</li>
+                                    <li>Legal counsel monitoring regulatory changes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `;
+    },
+
+    /**
+     * Export Section
+     */
+    buildExportSection() {
+        return `
+            <section class="export-section" style="margin: var(--space-12) 0 var(--space-16);">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Data Export & Analysis Tools</h3>
+                        <p class="card-subtitle">Download projections for further analysis</p>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size: var(--text-sm); color: var(--color-gray-600); margin-bottom: var(--space-6); line-height: 1.6;">
+                            Export your customized projections to CSV or JSON format for integration with financial models,
+                            presentations, or portfolio analytics.
+                        </p>
+                        <div style="display: flex; gap: var(--space-4); flex-wrap: wrap;">
+                            <button id="finance-export-csv-btn" class="btn btn-primary">
+                                <span>Export to CSV</span>
+                            </button>
+                            <button id="finance-export-json-btn" class="btn btn-secondary">
+                                <span>Export to JSON</span>
+                            </button>
+                            <button id="finance-reset-btn" class="btn btn-outline">
+                                <span>Reset to Defaults</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `;
+    },
+
+    /**
+     * Initialize Components - Continuing with remaining methods...
+     */
+
