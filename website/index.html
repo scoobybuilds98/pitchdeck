@@ -3,146 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Interactive Business Projections Platform - Mainland Truck & Trailer, Northland Equipment, Blue Capital Finance">
-    <title>Business Projections Platform | Interactive Financial Modeling</title>
+    <meta name="description" content="Institutional-grade investment portfolio platform featuring multi-business financial projections, real-time modeling, and comprehensive analytical insights.">
+    <meta name="author" content="Investment Analytics Group">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Investment Portfolio Platform | Institutional Financial Projections</title>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-    <!-- Stylesheets -->
+    <!-- CSS Imports -->
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/charts.css">
+
+    <!-- Google Fonts: Inter and JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="loading-spinner"></div>
-        <p>Loading Business Data...</p>
-    </div>
-
-    <!-- Header -->
+    <!-- Main Header -->
     <header class="main-header">
         <div class="container">
             <div class="header-content">
-                <div class="logo-section">
-                    <h1 class="platform-title">Business Projections Platform</h1>
-                    <p class="platform-subtitle">Interactive Financial Modeling & Analytics</p>
+                <!-- Platform Title -->
+                <h1 class="platform-title">Investment Portfolio Platform</h1>
+                <p class="platform-subtitle">Institutional-Grade Financial Projections & Strategic Analysis</p>
+            </div>
+
+            <!-- Business Selector Tabs -->
+            <nav class="business-tabs">
+                <button class="business-tab active" data-business="mainland-northland">
+                    <div class="tab-label">Mainland Truck & Trailer</div>
+                    <div class="tab-sublabel">Transport & Construction Equipment</div>
+                </button>
+                <button class="business-tab" data-business="blue-capital">
+                    <div class="tab-label">Blue Capital Equipment Finance</div>
+                    <div class="tab-sublabel">Equipment Financing Solutions</div>
+                </button>
+            </nav>
+
+            <!-- Quick Stats Bar -->
+            <div class="quick-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Total Projected Revenue</div>
+                    <div class="stat-value" id="quick-revenue">$0</div>
                 </div>
-                <nav class="main-nav">
-                    <a href="#home" class="nav-link active">Home</a>
-                    <a href="#about" class="nav-link">About</a>
-                    <a href="#contact" class="nav-link">Contact</a>
-                </nav>
+                <div class="stat-item">
+                    <div class="stat-label">6-Year EBITDA</div>
+                    <div class="stat-value" id="quick-ebitda">$0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Avg. EBITDA Margin</div>
+                    <div class="stat-value" id="quick-margin">0%</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">NPV (12% WACC)</div>
+                    <div class="stat-value" id="quick-npv">$0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Projected IRR</div>
+                    <div class="stat-value" id="quick-irr">0%</div>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Business Selector -->
-    <section class="business-selector">
-        <div class="container">
-            <h2 class="section-title">Select a Business</h2>
-            <p class="section-subtitle">View detailed projections, interactive charts, and financial models for each business</p>
-
-            <div class="business-tabs">
-                <button class="business-tab active" data-business="mainland-northland">
-                    <div class="tab-icon">🚛</div>
-                    <div class="tab-content">
-                        <h3>Mainland Truck & Trailer</h3>
-                        <p>Transport Equipment Rental & Sales</p>
-                    </div>
-                    <div class="tab-badge">+ Northland Equipment</div>
-                </button>
-
-                <button class="business-tab" data-business="blue-capital">
-                    <div class="tab-icon">💼</div>
-                    <div class="tab-content">
-                        <h3>Blue Capital Equipment Finance</h3>
-                        <p>Equipment Financing & Leasing</p>
-                    </div>
-                </button>
-
-                <button class="business-tab disabled" data-business="add-new">
-                    <div class="tab-icon">➕</div>
-                    <div class="tab-content">
-                        <h3>Add New Business</h3>
-                        <p>Expand your portfolio</p>
-                    </div>
-                </button>
-            </div>
+    <!-- Main Content Area -->
+    <main id="business-content" class="main-content">
+        <!-- Dynamic content rendered by JavaScript business modules -->
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading financial projections...</p>
         </div>
-    </section>
-
-    <!-- Main Dashboard Container -->
-    <main id="dashboard-container" class="dashboard-container">
-        <!-- Content will be loaded dynamically -->
     </main>
-
-    <!-- Quick Stats Bar (Sticky) -->
-    <div id="quick-stats-bar" class="quick-stats-bar hidden">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-label">Total Fleet</span>
-                    <span class="stat-value" id="total-fleet">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Annual Revenue</span>
-                    <span class="stat-value" id="annual-revenue">$0M</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Utilization</span>
-                    <span class="stat-value" id="utilization-rate">0%</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">EBITDA Margin</span>
-                    <span class="stat-value" id="ebitda-margin">0%</span>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Footer -->
     <footer class="main-footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4>Business Projections Platform</h4>
-                    <p>Interactive financial modeling and analytics for multi-business portfolios</p>
+                    <p class="footer-timestamp">
+                        Last Updated: <span id="footer-timestamp"></span>
+                    </p>
+                    <p class="footer-disclaimer">
+                        All projections are forward-looking statements subject to risks and uncertainties.
+                        Past performance does not guarantee future results. This analysis is for informational
+                        purposes only and does not constitute investment advice.
+                    </p>
                 </div>
                 <div class="footer-section">
-                    <h4>Businesses</h4>
-                    <ul>
-                        <li><a href="#mainland-northland">Mainland Truck & Trailer</a></li>
-                        <li><a href="#mainland-northland">Northland Equipment</a></li>
-                        <li><a href="#blue-capital">Blue Capital Finance</a></li>
-                    </ul>
+                    <p class="footer-copyright">
+                        Investment Portfolio Platform | Institutional Analytics Division
+                    </p>
+                    <p class="footer-version">
+                        Version 1.0 | Built with Chart.js
+                    </p>
                 </div>
-                <div class="footer-section">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="#documentation">Documentation</a></li>
-                        <li><a href="#export">Export Data</a></li>
-                        <li><a href="#api">API Access</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Business Projections Platform. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- JavaScript Imports (in strict dependency order) -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/charts.js"></script>
     <script src="js/calculator.js"></script>
+    <script src="js/charts.js"></script>
     <script src="js/businesses/mainland-northland.js"></script>
     <script src="js/businesses/blue-capital.js"></script>
     <script src="js/main.js"></script>

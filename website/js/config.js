@@ -22,7 +22,6 @@ const CONFIG = {
         types: {
             chassis: {
                 name: 'Chassis',
-                icon: '🚛',
                 rentalRate: 2500,      // $ per month
                 purchasePrice: 45000,  // $ per unit
                 utilization: {
@@ -35,7 +34,6 @@ const CONFIG = {
             },
             dryVan: {
                 name: 'Dry Van',
-                icon: '📦',
                 rentalRate: 1800,
                 purchasePrice: 35000,
                 utilization: {
@@ -48,7 +46,6 @@ const CONFIG = {
             },
             flatbed: {
                 name: 'Flatbed Trailer',
-                icon: '🚚',
                 rentalRate: 1600,
                 purchasePrice: 32000,
                 utilization: {
@@ -61,7 +58,6 @@ const CONFIG = {
             },
             reefer: {
                 name: 'Refrigerated Trailer',
-                icon: '❄️',
                 rentalRate: 2200,
                 purchasePrice: 55000,
                 utilization: {
@@ -106,7 +102,6 @@ const CONFIG = {
         sdlg: {
             excavators: {
                 name: 'SDLG Excavators',
-                icon: '🏗️',
                 brand: 'SDLG',
                 brandColor: '#047857',
                 rentalRate: 12000,      // $ per month
@@ -121,7 +116,6 @@ const CONFIG = {
             },
             loaders: {
                 name: 'SDLG Wheel Loaders',
-                icon: '🚜',
                 brand: 'SDLG',
                 brandColor: '#047857',
                 rentalRate: 10000,
@@ -136,7 +130,6 @@ const CONFIG = {
             },
             dozers: {
                 name: 'SDLG Dozers',
-                icon: '🏗️',
                 brand: 'SDLG',
                 brandColor: '#047857',
                 rentalRate: 15000,
@@ -155,7 +148,6 @@ const CONFIG = {
         chl: {
             loaders: {
                 name: 'CHL Loaders',
-                icon: '🚜',
                 brand: 'CHL',
                 brandColor: '#ea580c',
                 rentalRate: 9000,
@@ -170,7 +162,6 @@ const CONFIG = {
             },
             backhoes: {
                 name: 'CHL Backhoes',
-                icon: '🏗️',
                 brand: 'CHL',
                 brandColor: '#ea580c',
                 rentalRate: 8000,
@@ -189,7 +180,6 @@ const CONFIG = {
         xcmg: {
             cranes: {
                 name: 'XCMG Cranes',
-                icon: '🏗️',
                 brand: 'XCMG',
                 brandColor: '#dc2626',
                 rentalRate: 30000,
@@ -204,7 +194,6 @@ const CONFIG = {
             },
             roadMachinery: {
                 name: 'XCMG Road Machinery',
-                icon: '🛣️',
                 brand: 'XCMG',
                 brandColor: '#dc2626',
                 rentalRate: 18000,
@@ -275,21 +264,18 @@ const CONFIG = {
         products: {
             equipmentLoan: {
                 name: 'Equipment Loan',
-                icon: '💰',
                 defaultRate: 0.065,     // 6.5% interest rate
                 termMonths: 60,
                 ltv: 0.85              // Loan-to-value ratio
             },
             lease: {
                 name: 'Equipment Lease',
-                icon: '📋',
                 defaultRate: 0.055,
                 termMonths: 48,
                 ltv: 0.90
             },
             lineOfCredit: {
                 name: 'Line of Credit',
-                icon: '💳',
                 defaultRate: 0.075,
                 termMonths: 12,
                 ltv: 0.70
