@@ -645,6 +645,143 @@ const Charts = {
     },
 
     /**
+     * Update or create a chart with new data
+     * @param {string} canvasId - Canvas element ID
+     * @param {string} type - Chart type (line, bar, doughnut, pie)
+     * @param {Object} data - Chart data
+     * @param {Object} options - Chart options
+     * @returns {Chart} Chart instance
+     */
+    updateOrCreate(canvasId, type, data, options = {}) {
+        // Destroy existing chart if it exists
+        this.destroy(canvasId);
+
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) {
+            console.warn(`Canvas element with ID '${canvasId}' not found`);
+            return null;
+        }
+
+        // Build chart options based on type and provided options
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            family: "'Inter', sans-serif",
+                            size: 12
+                        },
+                        padding: 15,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                    titleFont: {
+                        family: "'Inter', sans-serif",
+                        size: 14,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        family: "'Roboto Mono', monospace",
+                        size: 12
+                    },
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: true,
+                    callbacks: {}
+                }
+            }
+        };
+
+        // Add title if provided
+        if (options.title) {
+            chartOptions.plugins.title = {
+                display: true,
+                text: options.title,
+                font: { size: 16, weight: 'bold' },
+                padding: { top: 10, bottom: 20 }
+            };
+        }
+
+        // Configure scales based on chart type
+        if (type === 'line' || type === 'bar') {
+            chartOptions.scales = {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { family: "'Roboto Mono', monospace" }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: { family: "'Inter', sans-serif" }
+                    }
+                }
+            };
+
+            // Apply custom y-axis formatter if provided
+            if (options.yAxisFormatter) {
+                chartOptions.scales.y.ticks.callback = options.yAxisFormatter;
+            }
+
+            // Apply custom tooltip formatter if provided
+            if (options.yAxisFormatter) {
+                chartOptions.plugins.tooltip.callbacks.label = (context) => {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    label += options.yAxisFormatter(context.parsed.y);
+                    return label;
+                };
+            }
+
+            // Handle stacked charts
+            if (options.stacked) {
+                chartOptions.scales.x.stacked = true;
+                chartOptions.scales.y.stacked = true;
+            }
+
+            // Handle dual axis charts
+            if (options.dualAxis) {
+                chartOptions.scales.y1 = {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    ticks: {
+                        font: { family: "'Roboto Mono', monospace" },
+                        callback: (value) => `${value.toFixed(1)}%`
+                    }
+                };
+            }
+        }
+
+        // Create the chart
+        const chart = new Chart(canvas, {
+            type: type,
+            data: data,
+            options: chartOptions
+        });
+
+        // Store instance for future updates
+        this.instances[canvasId] = chart;
+
+        return chart;
+    },
+
+    /**
      * Destroy all charts
      */
     destroyAll() {
