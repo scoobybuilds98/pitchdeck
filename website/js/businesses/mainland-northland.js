@@ -963,7 +963,7 @@ const MainlandNorthland = {
      * Create Transport Fleet Input Forms
      */
     createTransportInputs() {
-        const types = Object.keys(CONFIG.transport.equipmentTypes);
+        const types = Object.keys(CONFIG.transport.types);
         let html = '<div style="display: grid; gap: var(--space-4);">';
 
         CONFIG.years.forEach(year => {
@@ -974,7 +974,7 @@ const MainlandNorthland = {
                     </h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3);">
                         ${types.map(type => {
-                            const typeConfig = CONFIG.transport.equipmentTypes[type];
+                            const typeConfig = CONFIG.transport.types[type];
                             return `
                                 <div>
                                     <label style="display: block; font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">
@@ -1006,7 +1006,14 @@ const MainlandNorthland = {
      * Create Construction Fleet Input Forms
      */
     createConstructionInputs() {
-        const types = Object.keys(CONFIG.construction.equipmentTypes);
+        // Get all equipment types across all brands
+        const allTypes = [];
+        ['sdlg', 'chl', 'xcmg'].forEach(brand => {
+            Object.keys(CONFIG.construction[brand]).forEach(type => {
+                allTypes.push({ brand, type, config: CONFIG.construction[brand][type] });
+            });
+        });
+
         let html = '<div style="display: grid; gap: var(--space-4);">';
 
         CONFIG.years.forEach(year => {
@@ -1016,8 +1023,8 @@ const MainlandNorthland = {
                         ${year} Fleet
                     </h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3);">
-                        ${types.map(type => {
-                            const typeConfig = CONFIG.construction.equipmentTypes[type];
+                        ${allTypes.map(({ brand, type, config: typeConfig }) => {
+                            const currentValue = this.state.constructionFleet[year][brand] ? this.state.constructionFleet[year][brand][type] : 0;
                             return `
                                 <div>
                                     <label style="display: block; font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">
@@ -1027,8 +1034,9 @@ const MainlandNorthland = {
                                         type="number"
                                         class="form-input construction-fleet-input"
                                         data-year="${year}"
+                                        data-brand="${brand}"
                                         data-type="${type}"
-                                        value="${this.state.constructionFleet[year][type]}"
+                                        value="${currentValue}"
                                         min="0"
                                         max="500"
                                         style="width: 100%; padding: var(--space-2); font-size: var(--text-sm);"
@@ -1061,7 +1069,11 @@ const MainlandNorthland = {
                 if (division === 'transport') {
                     this.state.transportFleet[year][type] = value;
                 } else {
-                    this.state.constructionFleet[year][type] = value;
+                    const brand = e.target.dataset.brand;
+                    if (!this.state.constructionFleet[year][brand]) {
+                        this.state.constructionFleet[year][brand] = {};
+                    }
+                    this.state.constructionFleet[year][brand][type] = value;
                 }
 
                 // Real-time update with debouncing
@@ -1120,7 +1132,7 @@ const MainlandNorthland = {
                         <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
                             <label style="font-size: var(--text-sm); color: var(--color-gray-700);">Sales</label>
                             <span class="${division}-sales-value" style="font-size: var(--text-sm); font-family: var(--font-mono); font-weight: var(--weight-semibold);">
-                                ${(split.sales * 100).toFixed(0)}%
+                                ${(split.sale * 100).toFixed(0)}%
                             </span>
                         </div>
                         <input
@@ -1129,7 +1141,7 @@ const MainlandNorthland = {
                             min="0"
                             max="100"
                             step="5"
-                            value="${split.sales * 100}"
+                            value="${split.sale * 100}"
                             style="width: 100%;"
                         />
                     </div>
@@ -1170,7 +1182,7 @@ const MainlandNorthland = {
             const split = division === 'transport' ? this.state.transportSplit : this.state.constructionSplit;
             split.rental = rental / 100;
             split.lease = lease / 100;
-            split.sales = sales / 100;
+            split.sale = sales / 100;
 
             // Real-time update
             this.recalculateAndUpdate();
@@ -1263,8 +1275,8 @@ const MainlandNorthland = {
             datasets: [{
                 label: 'Total Revenue',
                 data: CONFIG.years.map(y => proj.revenue.byYear[y].total),
-                borderColor: CONFIG.colors.primary,
-                backgroundColor: CONFIG.colors.primaryLight,
+                borderColor: CONFIG.charts.colors.primary,
+                backgroundColor: CONFIG.charts.colors.accent,
                 fill: true,
                 tension: 0.4
             }]
@@ -1286,15 +1298,15 @@ const MainlandNorthland = {
                 {
                     label: 'Transport Equipment',
                     data: CONFIG.years.map(y => proj.transport.revenue.byYear[y].total),
-                    backgroundColor: CONFIG.colors.transport,
-                    borderColor: CONFIG.colors.transport,
+                    backgroundColor: CONFIG.charts.colors.transport,
+                    borderColor: CONFIG.charts.colors.transport,
                     borderWidth: 2
                 },
                 {
                     label: 'Construction Equipment',
                     data: CONFIG.years.map(y => proj.construction.revenue.byYear[y].total),
-                    backgroundColor: CONFIG.colors.construction,
-                    borderColor: CONFIG.colors.construction,
+                    backgroundColor: CONFIG.charts.colors.construction,
+                    borderColor: CONFIG.charts.colors.construction,
                     borderWidth: 2
                 }
             ]
@@ -1318,15 +1330,15 @@ const MainlandNorthland = {
                     label: 'EBITDA',
                     data: CONFIG.years.map(y => proj.ebitda.byYear[y].amount),
                     type: 'bar',
-                    backgroundColor: CONFIG.colors.success,
-                    borderColor: CONFIG.colors.success,
+                    backgroundColor: CONFIG.charts.colors.success,
+                    borderColor: CONFIG.charts.colors.success,
                     yAxisID: 'y'
                 },
                 {
                     label: 'EBITDA Margin %',
                     data: CONFIG.years.map(y => proj.ebitda.byYear[y].marginPercent),
                     type: 'line',
-                    borderColor: CONFIG.colors.gold,
+                    borderColor: CONFIG.charts.colors.warning,
                     backgroundColor: 'transparent',
                     borderWidth: 3,
                     yAxisID: 'y1',
@@ -1352,9 +1364,9 @@ const MainlandNorthland = {
                 label: 'Free Cash Flow',
                 data: CONFIG.years.map(y => proj.fcf.byYear[y]),
                 backgroundColor: CONFIG.years.map(y =>
-                    proj.fcf.byYear[y] >= 0 ? CONFIG.colors.success : CONFIG.colors.danger
+                    proj.fcf.byYear[y] >= 0 ? CONFIG.charts.colors.success : CONFIG.charts.colors.danger
                 ),
-                borderColor: CONFIG.colors.primary,
+                borderColor: CONFIG.charts.colors.primary,
                 borderWidth: 1
             }]
         };
@@ -1369,19 +1381,19 @@ const MainlandNorthland = {
      * Update Transport Fleet Chart
      */
     updateTransportFleetChart(proj) {
-        const types = Object.keys(CONFIG.transport.equipmentTypes);
+        const types = Object.keys(CONFIG.transport.types);
         const year2025 = this.state.transportFleet[2025];
 
         const data = {
-            labels: types.map(t => CONFIG.transport.equipmentTypes[t].name),
+            labels: types.map(t => CONFIG.transport.types[t].name),
             datasets: [{
                 data: types.map(t => year2025[t]),
                 backgroundColor: [
-                    CONFIG.colors.transport,
-                    CONFIG.colors.transportLight,
-                    CONFIG.colors.primary,
-                    CONFIG.colors.info,
-                    CONFIG.colors.warning
+                    CONFIG.charts.colors.transport,
+                    CONFIG.charts.colors.primary,
+                    CONFIG.charts.colors.accent,
+                    CONFIG.charts.colors.secondary,
+                    CONFIG.charts.colors.warning
                 ]
             }]
         };
@@ -1395,20 +1407,32 @@ const MainlandNorthland = {
      * Update Construction Fleet Chart
      */
     updateConstructionFleetChart(proj) {
-        const types = Object.keys(CONFIG.construction.equipmentTypes);
+        // Get all equipment types across all brands
+        const allTypes = [];
+        const labels = [];
+        const values = [];
         const year2025 = this.state.constructionFleet[2025];
 
+        ['sdlg', 'chl', 'xcmg'].forEach(brand => {
+            Object.keys(CONFIG.construction[brand]).forEach(type => {
+                const typeConfig = CONFIG.construction[brand][type];
+                labels.push(typeConfig.name);
+                values.push(year2025[brand] ? year2025[brand][type] : 0);
+            });
+        });
+
         const data = {
-            labels: types.map(t => CONFIG.construction.equipmentTypes[t].name),
+            labels: labels,
             datasets: [{
-                data: types.map(t => year2025[t]),
+                data: values,
                 backgroundColor: [
-                    CONFIG.colors.construction,
-                    CONFIG.colors.constructionLight,
-                    CONFIG.colors.warning,
-                    CONFIG.colors.gold,
-                    CONFIG.colors.primary,
-                    CONFIG.colors.info
+                    CONFIG.charts.colors.sdlg,
+                    CONFIG.charts.colors.sdlg,
+                    CONFIG.charts.colors.sdlg,
+                    CONFIG.charts.colors.chl,
+                    CONFIG.charts.colors.chl,
+                    CONFIG.charts.colors.xcmg,
+                    CONFIG.charts.colors.xcmg
                 ]
             }]
         };
@@ -1432,10 +1456,15 @@ const MainlandNorthland = {
         CONFIG.years.forEach(year => {
             const yearData = proj.construction.revenue.byYear[year];
             Object.keys(yearData.byType || {}).forEach(type => {
-                const typeConfig = CONFIG.construction.equipmentTypes[type];
-                if (typeConfig && typeConfig.brand) {
-                    brandRevenue[typeConfig.brand] += yearData.byType[type] || 0;
-                }
+                // Extract brand from type config
+                ['sdlg', 'chl', 'xcmg'].forEach(brand => {
+                    if (CONFIG.construction[brand][type]) {
+                        const brandName = CONFIG.construction[brand][type].brand;
+                        if (brandName) {
+                            brandRevenue[brandName] += yearData.byType[type] || 0;
+                        }
+                    }
+                });
             });
         });
 
@@ -1445,11 +1474,11 @@ const MainlandNorthland = {
                 label: 'Total Revenue by Brand',
                 data: Object.values(brandRevenue),
                 backgroundColor: [
-                    CONFIG.colors.construction,
-                    CONFIG.colors.constructionLight,
-                    CONFIG.colors.gold
+                    CONFIG.charts.colors.sdlg,
+                    CONFIG.charts.colors.chl,
+                    CONFIG.charts.colors.xcmg
                 ],
-                borderColor: CONFIG.colors.primary,
+                borderColor: CONFIG.charts.colors.primary,
                 borderWidth: 1
             }]
         };
@@ -1469,8 +1498,8 @@ const MainlandNorthland = {
             datasets: [{
                 label: 'Capital Requirements',
                 data: CONFIG.years.map(y => proj.capitalRequirements.byYear[y]),
-                backgroundColor: CONFIG.colors.primary,
-                borderColor: CONFIG.colors.primaryDark,
+                backgroundColor: CONFIG.charts.colors.primary,
+                borderColor: CONFIG.charts.colors.secondary,
                 borderWidth: 2
             }]
         };
@@ -1564,10 +1593,55 @@ const MainlandNorthland = {
         this.state.scenario = 'moderate';
 
         // Re-render the entire dashboard
-        const container = document.getElementById('business-content');
+        const container = document.getElementById('dashboard-container');
         if (container) {
             this.render(container);
         }
+    },
+
+    /**
+     * Get current statistics for quick stats bar
+     * @returns {Object} Current statistics
+     */
+    getCurrentStats() {
+        const proj = this.state.projections;
+        if (!proj) {
+            return {
+                totalFleet: 0,
+                annualRevenue: 0,
+                utilizationRate: 0,
+                ebitdaMargin: 0
+            };
+        }
+
+        // Calculate total fleet size for 2025
+        const transport2025 = this.state.transportFleet[2025];
+        const construction2025 = this.state.constructionFleet[2025];
+
+        let totalFleet = 0;
+        // Add transport fleet
+        Object.values(transport2025).forEach(count => totalFleet += count);
+        // Add construction fleet
+        Object.values(construction2025).forEach(brandFleet => {
+            if (typeof brandFleet === 'object') {
+                Object.values(brandFleet).forEach(count => totalFleet += count);
+            }
+        });
+
+        // Get 2025 revenue and EBITDA margin
+        const revenue2025 = proj.revenue.byYear[2025].total;
+        const ebitdaMargin2025 = proj.ebitda.byYear[2025].marginPercent / 100;
+
+        // Average utilization rate (simplified)
+        const utilizationRate = this.state.scenario === 'conservative' ? 0.85 :
+                               this.state.scenario === 'moderate' ? 0.90 : 0.95;
+
+        return {
+            totalFleet: totalFleet,
+            annualRevenue: revenue2025,
+            utilizationRate: utilizationRate,
+            ebitdaMargin: ebitdaMargin2025
+        };
     }
 };
 
