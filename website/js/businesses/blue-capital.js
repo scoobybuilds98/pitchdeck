@@ -889,6 +889,439 @@ const BlueCapital = {
     },
 
     /**
-     * Initialize Components - Continuing with remaining methods...
+     * Initialize Interactive Components
      */
+    initializeComponents() {
+        // Initialize scenario selector
+        const scenarioContainer = document.getElementById('scenario-controls');
+        if (scenarioContainer) {
+            scenarioContainer.innerHTML = this.createScenarioButtons();
+            this.addScenarioListeners();
+        }
 
+        // Create portfolio input forms
+        const portfolioContainer = document.getElementById('portfolio-inputs-container');
+        if (portfolioContainer) {
+            portfolioContainer.innerHTML = this.createPortfolioInputs();
+            this.addPortfolioInputListeners();
+        }
+
+        // Add export button listeners
+        const exportCSVBtn = document.getElementById('finance-export-csv-btn');
+        if (exportCSVBtn) {
+            exportCSVBtn.addEventListener('click', () => this.exportToCSV());
+        }
+
+        const exportJSONBtn = document.getElementById('finance-export-json-btn');
+        if (exportJSONBtn) {
+            exportJSONBtn.addEventListener('click', () => this.exportToJSON());
+        }
+
+        const resetBtn = document.getElementById('finance-reset-btn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => this.resetToDefaults());
+        }
+    },
+
+    /**
+     * Create Scenario Selector Buttons
+     */
+    createScenarioButtons() {
+        const scenarios = [
+            { id: 'conservative', label: 'Conservative', desc: 'Lower portfolio growth, higher reserves' },
+            { id: 'moderate', label: 'Moderate', desc: 'Balanced growth and risk management' },
+            { id: 'aggressive', label: 'Aggressive', desc: 'Rapid portfolio expansion' }
+        ];
+
+        return `
+            <div class="scenario-buttons" style="display: flex; gap: var(--space-4); flex-wrap: wrap;">
+                ${scenarios.map(s => `
+                    <button
+                        class="scenario-btn ${this.state.scenario === s.id ? 'active' : ''}"
+                        data-scenario="${s.id}"
+                        style="flex: 1; min-width: 200px; padding: var(--space-5); text-align: left; border: 2px solid var(--color-gray-300); border-radius: var(--radius-lg); background: var(--bg-surface); cursor: pointer; transition: all 0.2s;"
+                    >
+                        <div style="font-weight: var(--weight-semibold); font-size: var(--text-base); margin-bottom: var(--space-1);">${s.label}</div>
+                        <div style="font-size: var(--text-sm); color: var(--color-gray-600);">${s.desc}</div>
+                    </button>
+                `).join('')}
+            </div>
+        `;
+    },
+
+    /**
+     * Add Scenario Button Event Listeners
+     */
+    addScenarioListeners() {
+        const buttons = document.querySelectorAll('.scenario-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const scenario = e.currentTarget.dataset.scenario;
+                this.state.scenario = scenario;
+
+                // Update button states
+                buttons.forEach(b => b.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+
+                // Recalculate and update
+                this.recalculateAndUpdate();
+            });
+        });
+    },
+
+    /**
+     * Create Portfolio Input Forms
+     */
+    createPortfolioInputs() {
+        const products = Object.keys(CONFIG.finance.products);
+        let html = '<div class="card"><div class="card-header"><h3 class="card-title">Portfolio Configuration</h3><p class="card-subtitle">Customize contract volumes by product and year</p></div><div class="card-body">';
+        html += '<div style="display: grid; gap: var(--space-4);">';
+
+        CONFIG.years.forEach(year => {
+            html += `
+                <div style="background: var(--color-gray-50); padding: var(--space-4); border-radius: var(--radius-md);">
+                    <h4 style="font-size: var(--text-sm); font-weight: var(--weight-semibold); margin-bottom: var(--space-3); color: var(--color-finance);">
+                        ${year} Portfolio
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-3);">
+                        ${products.map(product => {
+                            const productConfig = CONFIG.finance.products[product];
+                            return `
+                                <div>
+                                    <label style="display: block; font-size: var(--text-xs); color: var(--color-gray-600); margin-bottom: var(--space-1);">
+                                        ${productConfig.name}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        class="form-input portfolio-input"
+                                        data-year="${year}"
+                                        data-product="${product}"
+                                        value="${this.state.portfolio[year][product]}"
+                                        min="0"
+                                        max="500"
+                                        style="width: 100%; padding: var(--space-2); font-size: var(--text-sm);"
+                                    />
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div></div></div>';
+        return html;
+    },
+
+    /**
+     * Add Portfolio Input Event Listeners
+     */
+    addPortfolioInputListeners() {
+        const inputs = document.querySelectorAll('.portfolio-input');
+
+        inputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                const year = parseInt(e.target.dataset.year);
+                const product = e.target.dataset.product;
+                const value = parseInt(e.target.value) || 0;
+
+                this.state.portfolio[year][product] = value;
+
+                // Real-time update with debouncing
+                this.recalculateAndUpdate();
+            });
+        });
+    },
+
+    /**
+     * Real-Time Update Handler with Debouncing
+     */
+    recalculateAndUpdate() {
+        if (this.state.isCalculating) return;
+
+        this.state.isCalculating = true;
+
+        // Debounce rapid updates
+        clearTimeout(this.updateTimeout);
+        this.updateTimeout = setTimeout(() => {
+            this.calculateProjections();
+            this.updateKPIs();
+            this.updateAllCharts();
+            this.state.isCalculating = false;
+        }, 100);
+    },
+
+    /**
+     * Update KPI Dashboard Values
+     */
+    updateKPIs() {
+        const proj = this.state.projections;
+        if (!proj) return;
+
+        const totalRevenue = proj.total.revenue;
+        const totalProfit = proj.total.profit;
+        const avgMargin = Utils.average(CONFIG.years.map(y => proj.byYear[y].margin)) * 100;
+        const totalContracts = CONFIG.years.reduce((sum, year) =>
+            sum + this.calculateTotalPortfolio(this.state.portfolio[year]), 0
+        );
+        const avgPortfolio = totalContracts / CONFIG.years.length;
+        const year2030Margin = proj.byYear[2030].margin * 100;
+
+        // Update KPI elements
+        this.updateMetricWithAnimation('finance-total-revenue', Utils.formatCurrency(totalRevenue, true));
+        this.updateMetricWithAnimation('finance-total-profit', Utils.formatCurrency(totalProfit, true));
+        this.updateMetricWithAnimation('finance-avg-margin', `${avgMargin.toFixed(1)}%`);
+        this.updateMetricWithAnimation('finance-total-contracts', Utils.formatNumber(totalContracts));
+        this.updateMetricWithAnimation('finance-avg-portfolio', Utils.formatNumber(Math.round(avgPortfolio)));
+        this.updateMetricWithAnimation('finance-2030-margin', `${year2030Margin.toFixed(1)}%`);
+    },
+
+    /**
+     * Update Metric with Animation
+     */
+    updateMetricWithAnimation(elementId, value) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.style.transition = 'opacity 0.2s';
+            element.style.opacity = '0.5';
+            setTimeout(() => {
+                element.textContent = value;
+                element.style.opacity = '1';
+            }, 100);
+        }
+    },
+
+    /**
+     * Update All Charts
+     */
+    updateAllCharts() {
+        const proj = this.state.projections;
+        if (!proj) return;
+
+        this.updateRevenueProfitChart(proj);
+        this.updateMarginChart(proj);
+        this.updatePortfolioMixChart(proj);
+        this.updatePortfolioGrowthChart(proj);
+    },
+
+    /**
+     * Update Revenue & Profit Chart
+     */
+    updateRevenueProfitChart(proj) {
+        const data = {
+            labels: CONFIG.years,
+            datasets: [
+                {
+                    label: 'Revenue',
+                    data: CONFIG.years.map(y => proj.byYear[y].revenue),
+                    type: 'bar',
+                    backgroundColor: CONFIG.charts.colors.finance,
+                    borderColor: CONFIG.charts.colors.finance,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Net Profit',
+                    data: CONFIG.years.map(y => proj.byYear[y].profit),
+                    type: 'line',
+                    borderColor: CONFIG.charts.colors.success,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    yAxisID: 'y',
+                    tension: 0.4
+                }
+            ]
+        };
+
+        Charts.updateOrCreate('finance-revenue-profit-chart', 'bar', data, {
+            title: 'Revenue & Profit Projection',
+            yAxisFormatter: (value) => Utils.formatCurrency(value, true),
+            dualAxis: false
+        });
+    },
+
+    /**
+     * Update Margin Chart
+     */
+    updateMarginChart(proj) {
+        const data = {
+            labels: CONFIG.years,
+            datasets: [{
+                label: 'Net Margin %',
+                data: CONFIG.years.map(y => proj.byYear[y].margin * 100),
+                borderColor: CONFIG.charts.colors.finance,
+                backgroundColor: CONFIG.charts.colors.accent,
+                fill: true,
+                tension: 0.4
+            }]
+        };
+
+        Charts.updateOrCreate('finance-margin-chart', 'line', data, {
+            title: 'Profit Margin Trend',
+            yAxisFormatter: (value) => `${value.toFixed(1)}%`
+        });
+    },
+
+    /**
+     * Update Portfolio Mix Chart
+     */
+    updatePortfolioMixChart(proj) {
+        const portfolio2025 = this.state.portfolio[2025];
+        const products = Object.keys(CONFIG.finance.products);
+
+        const data = {
+            labels: products.map(p => CONFIG.finance.products[p].name),
+            datasets: [{
+                data: products.map(p => portfolio2025[p]),
+                backgroundColor: [
+                    CONFIG.charts.colors.finance,
+                    CONFIG.charts.colors.accent,
+                    CONFIG.charts.colors.warning
+                ]
+            }]
+        };
+
+        Charts.updateOrCreate('finance-portfolio-mix-chart', 'doughnut', data, {
+            title: 'Portfolio Mix (2025)'
+        });
+    },
+
+    /**
+     * Update Portfolio Growth Chart
+     */
+    updatePortfolioGrowthChart(proj) {
+        const products = Object.keys(CONFIG.finance.products);
+
+        const data = {
+            labels: CONFIG.years,
+            datasets: products.map((product, idx) => {
+                const colors = [CONFIG.charts.colors.finance, CONFIG.charts.colors.accent, CONFIG.charts.colors.warning];
+                return {
+                    label: CONFIG.finance.products[product].name,
+                    data: CONFIG.years.map(y => this.state.portfolio[y][product]),
+                    backgroundColor: colors[idx % colors.length],
+                    borderColor: colors[idx % colors.length],
+                    borderWidth: 2
+                };
+            })
+        };
+
+        Charts.updateOrCreate('finance-portfolio-growth-chart', 'bar', data, {
+            title: 'Portfolio Growth by Product',
+            yAxisFormatter: (value) => Utils.formatNumber(value),
+            stacked: true
+        });
+    },
+
+    /**
+     * Export to CSV
+     */
+    exportToCSV() {
+        const proj = this.state.projections;
+        if (!proj) return;
+
+        let csv = 'Year,Revenue,Profit,Net Margin %,Total Contracts\n';
+
+        CONFIG.years.forEach(year => {
+            const revenue = proj.byYear[year].revenue;
+            const profit = proj.byYear[year].profit;
+            const margin = proj.byYear[year].margin * 100;
+            const contracts = this.calculateTotalPortfolio(this.state.portfolio[year]);
+
+            csv += `${year},${revenue},${profit},${margin.toFixed(2)},${contracts}\n`;
+        });
+
+        // Add summary metrics
+        csv += '\nSummary Metrics\n';
+        csv += `Total Revenue,${proj.total.revenue}\n`;
+        csv += `Total Profit,${proj.total.profit}\n`;
+        csv += `Avg Net Margin,${(Utils.average(CONFIG.years.map(y => proj.byYear[y].margin)) * 100).toFixed(2)}%\n`;
+
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `blue-capital-projections-${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    },
+
+    /**
+     * Export to JSON
+     */
+    exportToJSON() {
+        const exportData = {
+            timestamp: new Date().toISOString(),
+            scenario: this.state.scenario,
+            portfolio: this.state.portfolio,
+            projections: this.state.projections
+        };
+
+        const json = JSON.stringify(exportData, null, 2);
+
+        // Download
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `blue-capital-projections-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    },
+
+    /**
+     * Reset to Default Values
+     */
+    resetToDefaults() {
+        if (!confirm('Reset all inputs to default values? This will clear your customizations.')) {
+            return;
+        }
+
+        // Reset state
+        this.state.portfolio = Utils.deepClone(CONFIG.finance.defaultPortfolio);
+        this.state.scenario = 'moderate';
+
+        // Re-render the entire dashboard
+        const container = document.getElementById('dashboard-container');
+        if (container) {
+            this.render(container);
+        }
+    },
+
+    /**
+     * Get current statistics for quick stats bar
+     * @returns {Object} Current statistics
+     */
+    getCurrentStats() {
+        const proj = this.state.projections;
+        if (!proj) {
+            return {
+                totalFleet: 0,
+                annualRevenue: 0,
+                utilizationRate: 0,
+                ebitdaMargin: 0
+            };
+        }
+
+        // Calculate total portfolio size for 2025
+        const totalFleet = this.calculateTotalPortfolio(this.state.portfolio[2025]);
+
+        // Get 2025 revenue and profit margin
+        const revenue2025 = proj.byYear[2025].revenue;
+        const margin2025 = proj.byYear[2025].margin;
+
+        // Utilization rate (portfolio growth rate as proxy)
+        const utilizationRate = this.state.scenario === 'conservative' ? 0.75 :
+                               this.state.scenario === 'moderate' ? 0.85 : 0.95;
+
+        return {
+            totalFleet: totalFleet,
+            annualRevenue: revenue2025,
+            utilizationRate: utilizationRate,
+            ebitdaMargin: margin2025
+        };
+    }
+};
+
+// Make available globally
+window.BlueCapital = BlueCapital;
